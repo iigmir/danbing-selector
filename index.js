@@ -1,3 +1,5 @@
+const REGULAR = "原味";
+const SUFFIX = "蛋餅";
 class App {
     // List module
     ingredient = []
@@ -12,8 +14,6 @@ class App {
     chosen_ingredients = []
     limit_ingredients = 1
     get chosen_flavour() {
-        const REGULAR = "原味";
-        const SUFFIX = "蛋餅";
 
         const ingredients = this.chosen_ingredients.map( ingredient_index =>
             ingredient_index === REGULAR ? REGULAR : this.ingredient[ingredient_index]
@@ -22,22 +22,23 @@ class App {
     }
     get_ingredients(input = 0, limit_ingredients = 1) {
         let result = [];
-        for (let index = 0; index < limit_ingredients; index++) {
-            if (index > 100) {
-                throw new Error("Loop incorrect!");
+        while (result.length < limit_ingredients && input <= 100) {
+            let random_index = Math.floor(Math.random() * this.ingredient.length);
+            if (!result.includes(random_index)) {
+                result.push(random_index);
             }
-            result.push(parseInt(Math.random() * this.ingredient.length, 10));
+            input++;
         }
-        result = result.filter( (value, index, array) => array.indexOf(value) === index );
-        const ingredients_fits = result.length === this.limit_ingredients;
-        if ( ingredients_fits ) {
+
+        if (result.length === limit_ingredients) {
             return result;
-        } else if (input > this.ingredient.length) {
-            console.log(`🤷`);
-            return [REGULAR];
-        } else {
-            return this.get_ingredients(input + 1);
         }
+
+        if (input > 100) {
+            console.log("🤷");
+            return [REGULAR];
+        }
+        return this.get_ingredients(input, limit_ingredients);
     }
     decide_flavour() {
         this.chosen_ingredients = this.get_ingredients(0, this.limit_ingredients);
@@ -60,20 +61,14 @@ class App {
             this.result_element.setAttribute("hidden", true);
         }
     }
-    form_action() {
-        if( document.querySelector("#random-form") ) {
-            document.querySelector("#random-form").addEventListener("submit", this.handle_submit.bind(this) );
-        }
-    }
 
+    // Action
     handle_submit(e) {
         const blend_flavour_element = e.target.querySelector("input[name='blend-flavour']");
         e.preventDefault();
         this.reset_flavour(blend_flavour_element);
         this.decide_flavour();
     }
-
-    // Action
     main() {
         this.result_element = document.querySelector(".result");
         if( this.result_element == null ) {
@@ -85,7 +80,9 @@ class App {
             fetch("./api/single.txt").then( r => r.text() ),
         ]).then( ([ingredient_src, single_src]) => {
             this.set_list(ingredient_src, single_src);
-            this.form_action();
+            if( document.querySelector("#random-form") ) {
+                document.querySelector("#random-form").addEventListener("submit", this.handle_submit.bind(this) );
+            }
         }).catch( e => {
             console.error("Error fetching ingredients:", e);
         });
