@@ -1,4 +1,5 @@
 const REGULAR = "原味";
+const SUFFIX = "蛋餅";
 
 class App {
     // List module
@@ -15,7 +16,6 @@ class App {
     choosen_ingredients = []
     limit_ingredients = 1
     get choosen_flavour() {
-        const suffix = "蛋餅";
         let result = "";
         this.choosen_ingredients.forEach( (ingredient_index) => {
             if( ingredient_index === REGULAR ) {
@@ -24,7 +24,7 @@ class App {
             }
             result += this.ingredient[ingredient_index];
         });
-        return result + suffix;
+        return result + SUFFIX;
     }
     get_ingredients(input = 0, limit_ingredients = 1) {
         let result = [];
@@ -39,7 +39,7 @@ class App {
         if ( ingredients_fits ) {
             return result;
         } else if (input > this.ingredient.length) {
-            console.log(`¯\_(ツ)_/¯`);
+            console.log(`🤷`);
             return [REGULAR];
         } else {
             return this.get_ingredients(input + 1);
@@ -49,17 +49,20 @@ class App {
         this.choosen_ingredients = this.get_ingredients(0, this.limit_ingredients);
         this.show_flavour();
     }
+
+    // Result rendering module
+    result_element = null
     show_flavour() {
-        document.querySelector(".result #result-text").textContent = this.choosen_flavour;
-        document.querySelector(".result").removeAttribute("aria-hidden");
-        document.querySelector(".result").removeAttribute("hidden");
+        this.result_element.querySelector("#result-text").textContent = this.choosen_flavour;
+        this.result_element.removeAttribute("aria-hidden");
+        this.result_element.removeAttribute("hidden");
     }
     reset_flavour(blend_flavour_element) {
         this.blend_flavour = Boolean(blend_flavour_element.checked);
         this.limit_ingredients = this.blend_flavour ? 2 : 1;
         this.choosen_ingredients = [];
-        document.querySelector(".result").setAttribute("aria-hidden", true);
-        document.querySelector(".result").setAttribute("hidden", true);
+        this.result_element.setAttribute("aria-hidden", true);
+        this.result_element.setAttribute("hidden", true);
     }
     form_action() {
         document.querySelector("#random-form").addEventListener("submit", (e) => {
@@ -72,6 +75,10 @@ class App {
 
     // Action
     main() {
+        this.result_element = document.querySelector(".result");
+        if( this.result_element == null ) {
+            throw new Error("No element can show our result!");
+        }
         // Request list
         Promise.all([
             fetch("./api/ingredient.txt").then( r => r.text() ),
