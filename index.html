@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蛋餅蛋餅配什麼？</title>
+    <link href="bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <main class="container">
+        <h1>蛋餅蛋餅配什麼？</h1>
+        <form id="random-form" action="">
+            <div class="mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="blend-flavour" name="blend-flavour" />
+                  <label class="form-check-label" for="blend-flavour">兩種口味</label>
+                </div>
+                <!-- 幾種口味？ -->
+            </div>
+            <button type="submit" class="btn btn-primary">試試新口味吧</button>
+        </form>
+        <article class="result" hidden aria-hidden="true">
+            <p id="result-text"></p>
+        </article>
+    </main>
+    <script src="index.js"></script>
+</body>
+</html>
