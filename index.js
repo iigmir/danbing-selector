@@ -56,8 +56,8 @@ class App {
     main() {
         // Request list
         Promise.all([
-            fetch("/api/ingredient.txt").then( r => r.text() ),
-            fetch("/api/single.txt").then( r => r.text() ),
+            fetch("./api/ingredient.txt").then( r => r.text() ),
+            fetch("./api/single.txt").then( r => r.text() ),
         ]).then( ([ingredient_src, single_src]) => {
             this.set_list(ingredient_src, single_src);
             this.form_action();
