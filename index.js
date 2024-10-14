@@ -12,7 +12,6 @@ class App {
     }
 
     // Flavour module
-    blend_flavour = false
     choosen_ingredients = []
     limit_ingredients = 1
     get choosen_flavour() {
@@ -58,11 +57,13 @@ class App {
         this.result_element.removeAttribute("hidden");
     }
     reset_flavour(blend_flavour_element) {
-        this.blend_flavour = Boolean(blend_flavour_element.checked);
-        this.limit_ingredients = this.blend_flavour ? 2 : 1;
+        const blend_flavour = blend_flavour_element ? Boolean(blend_flavour_element.checked) : false;
+        this.limit_ingredients = blend_flavour ? 2 : 1;
         this.choosen_ingredients = [];
-        this.result_element.setAttribute("aria-hidden", true);
-        this.result_element.setAttribute("hidden", true);
+        if (this.result_element) {
+            this.result_element.setAttribute("aria-hidden", true);
+            this.result_element.setAttribute("hidden", true);
+        }
     }
     form_action() {
         document.querySelector("#random-form").addEventListener("submit", (e) => {
@@ -86,6 +87,8 @@ class App {
         ]).then( ([ingredient_src, single_src]) => {
             this.set_list(ingredient_src, single_src);
             this.form_action();
+        }).catch( e => {
+            console.error("Error fetching ingredients:", e);
         });
     }
 }
