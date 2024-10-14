@@ -1,6 +1,8 @@
-const REGULAR = "原味";
-const SUFFIX = "蛋餅";
 class App {
+    // Magic constants
+    REGULAR = "原味"
+    SUFFIX = "蛋餅"
+
     // List module
     ingredient = []
     single = []
@@ -14,11 +16,10 @@ class App {
     chosen_ingredients = []
     limit_ingredients = 1
     get chosen_flavour() {
-
         const ingredients = this.chosen_ingredients.map( ingredient_index =>
-            ingredient_index === REGULAR ? REGULAR : this.ingredient[ingredient_index]
+            ingredient_index === this.REGULAR ? this.REGULAR : this.ingredient[ingredient_index]
         );
-        return ingredients.join("") + SUFFIX;
+        return ingredients.join("") + this.SUFFIX;
     }
     get_ingredients(input = 0, limit_ingredients = 1) {
         let result = [];
@@ -36,7 +37,7 @@ class App {
 
         if (input > 100) {
             console.log("🤷");
-            return [REGULAR];
+            return [this.REGULAR];
         }
         return this.get_ingredients(input, limit_ingredients);
     }
@@ -47,19 +48,27 @@ class App {
 
     // Result rendering module
     result_element = null
+    set_hidden_status(result_element, show_dom = false) {
+        if( !result_element ) {
+            throw new Error("No elements given");
+        }
+        if( show_dom === true ) {
+            this.result_element.removeAttribute("aria-hidden");
+            this.result_element.removeAttribute("hidden");
+        } else {
+            this.result_element.setAttribute("aria-hidden", true);
+            this.result_element.setAttribute("hidden", true);
+        }
+    }
     show_flavour() {
         this.result_element.querySelector("#result-text").textContent = this.chosen_flavour;
-        this.result_element.removeAttribute("aria-hidden");
-        this.result_element.removeAttribute("hidden");
+        this.set_hidden_status( this.result_element, true );
     }
     reset_flavour(blend_flavour_element) {
         const blend_flavour = blend_flavour_element ? Boolean(blend_flavour_element.checked) : false;
         this.limit_ingredients = blend_flavour ? 2 : 1;
         this.chosen_ingredients = [];
-        if (this.result_element) {
-            this.result_element.setAttribute("aria-hidden", true);
-            this.result_element.setAttribute("hidden", true);
-        }
+        this.set_hidden_status( this.result_element, false );
     }
 
     // Action
@@ -90,4 +99,3 @@ class App {
 }
 
 (new App()).main();
-
