@@ -1,3 +1,5 @@
+const REGULAR = "原味";
+
 class App {
     // List module
     ingredient = []
@@ -10,26 +12,42 @@ class App {
 
     // Flavour module
     blend_flavour = false
-    choosen_index = -1
-    blend_choosen_index = -1
-    // choosen_type = -1
+    choosen_ingredients = []
+    limit_ingredients = 1
     get choosen_flavour() {
         const suffix = "蛋餅";
-        if( this.blend_flavour ) {
-            return `${this.ingredient[this.choosen_index]}${this.ingredient[this.blend_choosen_index]}${suffix}`;
+        let result = "";
+        this.choosen_ingredients.forEach( (ingredient_index) => {
+            if( ingredient_index === REGULAR ) {
+                result += REGULAR;
+                return;
+            }
+            result += this.ingredient[ingredient_index];
+        });
+        return result + suffix;
+    }
+    get_ingredients(input = 0, limit_ingredients = 1) {
+        let result = [];
+        for (let index = 0; index < limit_ingredients; index++) {
+            if (index > 100) {
+                throw new Error("Loop incorrect!");
+            }
+            result.push(parseInt(Math.random() * this.ingredient.length, 10));
         }
-        return `${this.ingredient[this.choosen_index]}${suffix}`;
+        result = result.filter( (value, index, array) => array.indexOf(value) === index );
+        const ingredients_fits = result.length === this.limit_ingredients;
+        if ( ingredients_fits ) {
+            return result;
+        } else if (input > this.ingredient.length) {
+            console.log(`¯\_(ツ)_/¯`);
+            return [REGULAR];
+        } else {
+            return this.get_ingredients(input + 1);
+        }
     }
     decide_flavour() {
-        this.choosen_index = parseInt(Math.random() * this.ingredient.length, 10);
-        this.blend_choosen_index = parseInt(Math.random() * this.ingredient.length, 10);
-        const flavours_are_the_same = this.choosen_index === this.blend_choosen_index;
-        if( flavours_are_the_same ) {
-            this.decide_flavour();
-        } else {
-            this.show_flavour();
-            return;
-        }
+        this.choosen_ingredients = this.get_ingredients(0, this.limit_ingredients);
+        this.show_flavour();
     }
     show_flavour() {
         document.querySelector(".result #result-text").textContent = this.choosen_flavour;
@@ -38,8 +56,8 @@ class App {
     }
     reset_flavour(blend_flavour_element) {
         this.blend_flavour = Boolean(blend_flavour_element.checked);
-        this.choosen_index = -1;
-        this.blend_choosen_index = -1;
+        this.limit_ingredients = this.blend_flavour ? 2 : 1;
+        this.choosen_ingredients = [];
         document.querySelector(".result").setAttribute("aria-hidden", true);
         document.querySelector(".result").setAttribute("hidden", true);
     }
