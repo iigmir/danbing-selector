@@ -3,7 +3,7 @@ class App {
     ingredient = []
     single = []
     set_list(ingredient_src, single_src) {
-        const convert_to_array = (input) => input.split("\r\n").filter(x => x !== "");
+        const convert_to_array = (input) => input.split("\n").filter(x => x !== "");
         this.ingredient = [...convert_to_array(ingredient_src)];
         this.single = [...convert_to_array(single_src)];
     }
