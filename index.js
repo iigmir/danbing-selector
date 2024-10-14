@@ -1,6 +1,3 @@
-const REGULAR = "原味";
-const SUFFIX = "蛋餅";
-
 class App {
     // List module
     ingredient = []
@@ -12,18 +9,16 @@ class App {
     }
 
     // Flavour module
-    choosen_ingredients = []
+    chosen_ingredients = []
     limit_ingredients = 1
-    get choosen_flavour() {
-        let result = "";
-        this.choosen_ingredients.forEach( (ingredient_index) => {
-            if( ingredient_index === REGULAR ) {
-                result += REGULAR;
-                return;
-            }
-            result += this.ingredient[ingredient_index];
-        });
-        return result + SUFFIX;
+    get chosen_flavour() {
+        const REGULAR = "原味";
+        const SUFFIX = "蛋餅";
+
+        const ingredients = this.chosen_ingredients.map( ingredient_index =>
+            ingredient_index === REGULAR ? REGULAR : this.ingredient[ingredient_index]
+        );
+        return ingredients.join("") + SUFFIX;
     }
     get_ingredients(input = 0, limit_ingredients = 1) {
         let result = [];
@@ -45,33 +40,37 @@ class App {
         }
     }
     decide_flavour() {
-        this.choosen_ingredients = this.get_ingredients(0, this.limit_ingredients);
+        this.chosen_ingredients = this.get_ingredients(0, this.limit_ingredients);
         this.show_flavour();
     }
 
     // Result rendering module
     result_element = null
     show_flavour() {
-        this.result_element.querySelector("#result-text").textContent = this.choosen_flavour;
+        this.result_element.querySelector("#result-text").textContent = this.chosen_flavour;
         this.result_element.removeAttribute("aria-hidden");
         this.result_element.removeAttribute("hidden");
     }
     reset_flavour(blend_flavour_element) {
         const blend_flavour = blend_flavour_element ? Boolean(blend_flavour_element.checked) : false;
         this.limit_ingredients = blend_flavour ? 2 : 1;
-        this.choosen_ingredients = [];
+        this.chosen_ingredients = [];
         if (this.result_element) {
             this.result_element.setAttribute("aria-hidden", true);
             this.result_element.setAttribute("hidden", true);
         }
     }
     form_action() {
-        document.querySelector("#random-form").addEventListener("submit", (e) => {
-            const blend_flavour_element = e.target.querySelector("input[name='blend-flavour']");
-            e.preventDefault();
-            this.reset_flavour(blend_flavour_element);
-            this.decide_flavour();
-        });
+        if( document.querySelector("#random-form") ) {
+            document.querySelector("#random-form").addEventListener("submit", this.handle_submit.bind(this) );
+        }
+    }
+
+    handle_submit(e) {
+        const blend_flavour_element = e.target.querySelector("input[name='blend-flavour']");
+        e.preventDefault();
+        this.reset_flavour(blend_flavour_element);
+        this.decide_flavour();
     }
 
     // Action
